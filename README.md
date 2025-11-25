@@ -11,7 +11,7 @@ Official repository for the research paper "**FutureSpecimens: An Agent-Driven S
 FutureSpecimens is a research-driven social simulation platform that creates digital representations of human behaviors and social dynamics through autonomous agents. This system serves as both a research tool for studying emergent social phenomena and an interactive art installation that invites participants to explore potential futures.
 
 The system consists of:
-- A Unity-based 3D simulation environment where agents evolve based on behavioral algorithms
+- A Unreal Engine-based 3D simulation environment where agents evolve based on behavioral algorithms
 - A Flask backend infrastructure for data collection and processing
 - Automated data visualization components that generate animated insights
 - A WeChat integration system allowing participants to engage with their "future selves"
