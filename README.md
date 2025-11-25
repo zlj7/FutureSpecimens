@@ -2,7 +2,7 @@
 
 [![Python](https://img.shields.io/badge/python-3.8%2B-blue)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
-[![Platform](https://img.shields.io/badge/platform-windows%20%7C%20linux%20%7C%20macos-lightgrey)]()
+[![Platform](https://img.shields.io/badge/platform-windows-blue)](https://www.microsoft.com/windows)
 
 Official repository for the research paper "**FutureSpecimens: An Agent-Driven Social Simulation Installation**" - A social simulation system combining agent-based modeling, data visualization, and interactive installation art.
 
