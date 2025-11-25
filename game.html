@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>艺术交换装置 - 数字分身探索</title>
+    <script src="https://cdn.tailwindcss.com/3.3.3"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        body {
+            background-color: #121212;
+            color: #e0e0e0;
+            font-family: 'Courier New', monospace;
+            overflow-x: hidden;
+        }
+        
+        .glow-effect {
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.7);
+            transition: box-shadow 0.3s ease;
+        }
+        
+        .glow-effect:hover {
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.9);
+        }
+        
+        .glow-text {
+            text-shadow: 0 0 5px rgba(0, 255, 0, 0.7);
+        }
+        
+        .code-stream {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            opacity: 0.2;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 20px,
+                rgba(0, 255, 0, 0.1) 20px,
+                rgba(0, 255, 0, 0.1) 22px
+            );
+        }
+        
+        .slider-track {
+            background-color: #333;
+            height: 8px;
+            border-radius: 4px;
+        }
+        
+        .slider-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        
+        .tab {
+            background-color: #222;
+            border: 1px solid #333;
+            transition: all 0.3s ease;
+        }
+        
+        .tab.active {
+            border-color: #0f0;
+            color: #0f0;
+        }
+        
+        .option-card {
+            background-color: #222;
+            border: 1px solid #333;
+            transition: all 0.3s ease;
+        }
+        
+        .option-card.selected {
+            border-color: #0f0;
+        }
+        
+        .qr-code {
+            width: 150px;
+            height: 150px;
+            background: 
+                linear-gradient(90deg, #222 25%, #333 25%, #333 50%, #222 50%, #222 75%, #333 75%),
+                linear-gradient(180deg, #222 25%, #333 25%, #333 50%, #222 50%, #222 75%, #333 75%);
+            background-size: 10px 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="code-stream"></div>
+    
+    <!-- 页面容器 -->
+    <div id="page-container" class="min-h-screen flex flex-col items-center justify-center p-4">
+        <!-- 欢迎引导页 -->
+        <div id="welcome-page" class="w-full max-w-3xl text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-6 glow-text">艺术交换装置</h1>
+            <p class="text-2xl md:text-3xl mb-8 glow-text">探索你的数字分身</p>
+            <p class="text-lg mb-12 text-gray-300">通过MBTI性格分析、生理状态和生活方式选择，创建你的数字分身并与他人交换</p>
+            <button id="start-btn" class="px-8 py-4 bg-black border-2 border-green-500 rounded-lg text-xl glow-effect hover:bg-gray-900 transition-all">
+                开始探索
+            </button>
+        </div>
+        
+        <!-- 用户名输入页 -->
+        <div id="name-input-page" class="w-full max-w-md hidden">
+            <h2 class="text-3xl font-bold mb-8 text-center glow-text">输入你的名称</h2>
+            <div class="bg-gray-900 p-8 rounded-lg border border-gray-700">
+                <div class="mb-6">
+                    <label for="player-name" class="block text-lg mb-2">请输入你的游戏名称</label>
+                    <input type="text" id="player-name" class="w-full bg-gray-800 border border-gray-600 rounded-lg p-3 text-white focus:border-green-500 focus:outline-none" placeholder="例如：旅行者">
+                </div>
+                <div class="flex justify-center gap-4">
+                    <button id="name-back-btn" class="px-6 py-3 bg-black border border-gray-500 rounded-lg hover:bg-gray-900 transition-all">
+                        返回
+                    </button>
+                    <button id="name-next-btn" class="px-6 py-3 bg-black border border-green-500 rounded-lg glow-effect hover:bg-gray-900 transition-all">
+                        继续
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- MBTI颜色维度选择页 -->
+        <div id="mbti-page" class="w-full max-w-4xl hidden">
+            <div class="flex flex-col md:flex-row gap-8">
+                <!-- 左侧滑块控制区 -->
+                <div class="w-full md:w-1/2 space-y-8">
+                    <div class="mb-6">
+                        <h2 class="text-2xl font-bold mb-2 glow-text">MBTI 维度调节</h2>
+                        <p class="text-gray-400">滑动调整你的性格倾向</p>
+                    </div>
+                    
+                    <!-- E/I 滑块 -->
+                    <div>
+                        <div class="flex justify-between mb-2">
+                            <span class="text-red-400">外向(E)</span>
+                            <span class="text-red-400">内向(I)</span>
+                        </div>
+                        <div class="slider-track relative">
+                            <div id="ei-slider" class="slider-thumb absolute top-1/2 transform -translate-y-1/2 bg-red-500 left-1/2"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- S/N 滑块 -->
+                    <div>
+                        <div class="flex justify-between mb-2">
+                            <span class="text-yellow-400">实感(S)</span>
+                            <span class="text-yellow-400">直觉(N)</span>
+                        </div>
+                        <div class="slider-track relative">
+                            <div id="sn-slider" class="slider-thumb absolute top-1/2 transform -translate-y-1/2 bg-yellow-500 left-1/2"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- T/F 滑块 -->
+                    <div>
+                        <div class="flex justify-between mb-2">
+                            <span class="text-blue-400">思考(T)</span>
+                            <span class="text-blue-400">情感(F)</span>
+                        </div>
+                        <div class="slider-track relative">
+                            <div id="tf-slider" class="slider-thumb absolute top-1/2 transform -translate-y-1/2 bg-blue-500 left-1/2"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- J/P 滑块 -->
+                    <div>
+                        <div class="flex justify-between mb-2">
+                            <span class="text-green-400">判断(J)</span>
+                            <span class="text-green-400">感知(P)</span>
+                        </div>
+                        <div class="slider-track relative">
+                            <div id="jp-slider" class="slider-thumb absolute top-1/2 transform -translate-y-1/2 bg-green-500 left-1/2"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 右侧预览区 -->
+                <div class="w-full md:w-1/2 space-y-8">
+                    <div>
+                        <h3 class="text-xl font-bold mb-4 glow-text">性格色彩混合</h3>
+                        <div id="color-preview" class="w-48 h-48 mx-auto rounded-full bg-gray-800 border border-gray-700"></div>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-xl font-bold mb-4 glow-text">心理数值分析</h3>
+                        <div class="bg-gray-900 p-4 rounded-lg">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <p class="text-gray-400">外向/内向</p>
+                                    <p id="ei-value" class="text-red-400">50% E</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-400">实感/直觉</p>
+                                    <p id="sn-value" class="text-yellow-400">50% S</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-400">思考/情感</p>
+                                    <p id="tf-value" class="text-blue-400">50% T</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-400">判断/感知</p>
+                                    <p id="jp-value" class="text-green-400">50% J</p>
+                                </div>
+                            </div>
+                            <p id="mbti-result" class="mt-4 text-gray-300">综合评估: 平衡型人格</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-12 flex justify-center">
+                <button id="mbti-next" class="px-6 py-3 bg-black border border-green-500 rounded-lg glow-effect hover:bg-gray-900 transition-all">
+                    下一步
+                </button>
+            </div>
+        </div>
+        
+        <!-- 生理状态选择页 -->
+        <div id="health-page" class="w-full max-w-3xl hidden">
+            <h2 class="text-3xl font-bold mb-8 text-center glow-text">生理状态选择</h2>
+            
+            <div class="flex flex-col md:flex-row gap-4 justify-center mb-8">
+                <!-- 健康选项卡 -->
+                <div id="health-good" class="tab p-6 text-center cursor-pointer active">
+                    <i class="fas fa-heartbeat text-4xl mb-3 text-green-500"></i>
+                    <h3 class="text-xl font-bold mb-2">健康</h3>
+                    <p class="text-gray-400">精力充沛，身体状态良好</p>
+                </div>
+                
+                <!-- 亚健康选项卡 -->
+                <div id="health-fair" class="tab p-6 text-center cursor-pointer">
+                    <i class="fas fa-tired text-4xl mb-3 text-yellow-500"></i>
+                    <h3 class="text-xl font-bold mb-2">亚健康</h3>
+                    <p class="text-gray-400">偶尔疲劳，身体状态一般</p>
+                </div>
+                
+                <!-- 欠佳选项卡 -->
+                <div id="health-poor" class="tab p-6 text-center cursor-pointer">
+                    <i class="fas fa-procedures text-4xl mb-3 text-red-500"></i>
+                    <h3 class="text-xl font-bold mb-2">欠佳</h3>
+                    <p class="text-gray-400">经常不适，身体状态较差</p>
+                </div>
+            </div>
+            
+            <div class="flex justify-center gap-4">
+                <button id="health-prev" class="px-6 py-3 bg-black border border-green-500 rounded-lg glow-effect hover:bg-gray-900 transition-all">
+                    上一步
+                </button>
+                <button id="health-next" class="px-6 py-3 bg-black border border-green-500 rounded-lg glow-effect hover:bg-gray-900 transition-all">
+                    下一步
+                </button>
+            </div>
+        </div>
+        
+        <!-- 道具选择页 -->
+        <div id="items-page" class="w-full max-w-3xl mx-auto hidden">
+            <h2 class="text-3xl font-bold mb-6 text-center glow-text">生活方式选择</h2>
+            
+            <!-- 交通工具选择 -->
+            <div class="mb-6">
+                <h3 class="text-xl font-bold mb-3 glow-text">交通工具</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <div class="option-card p-3 rounded-lg cursor-pointer" data-value="100" data-type="transport">
+                        <i class="fas fa-walking text-3xl mb-2 text-gray-300"></i>
+                        <h4 class="font-bold">步行</h4>
+                        <p class="text-green-500">100</p>
+                    </div>
+                    <div class="option-card p-3 rounded-lg cursor-pointer" data-value="500" data-type="transport">
+                        <i class="fas fa-bicycle text-3xl mb-2 text-gray-300"></i>
+                        <h4 class="font-bold">自行车</h4>
+                        <p class="text-green-500">500</p>
+                    </div>
+                    <div class="option-card p-3 rounded-lg cursor-pointer" data-value="1500" data-type="transport">
+                        <i class="fas fa-motorcycle text-3xl mb-2 text-gray-300"></i>
+                        <h4 class="font-bold">电动车</h4>
+                        <p class="text-green-500">1500</p>
+                    </div>
+                    <div class="option-card p-3 rounded-lg cursor-pointer" data-value="3000" data-type="transport">
+                        <i class="fas fa-car text-3xl mb-2 text-gray-300"></i>
+                        <h4 class="font-bold">汽车</h4>
+                        <p class="text-green-500">3000</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 住宅选择 -->
+            <div class="mb-6">
+                <h3 class="text-xl font-bold mb-3 glow-text">住宅</h3>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    <div class="option-card p-3 rounded-lg cursor-pointer" data-value="500" data-type="housing">
+                        <i class="fas fa-home text-3xl mb-2 text-gray-300"></i>
+                        <h4 class="font-bold">合租</h4>
+                        <p class="text-green-500">500</p>
+                    </div>
+                    <div class="option-card p-3 rounded-lg cursor-pointer" data-value="2000" data-type="housing">
+                        <i class="fas fa-building text-3xl mb-2 text-gray-300"></i>
+                        <h4 class="font-bold">公寓</h4>
+                        <p class="text-green-500">2000</p>
+                    </div>
+                    <div class="option-card p-3 rounded-lg cursor-pointer" data-value="5000" data-type="housing">
+                        <i class="fas fa-igloo text-3xl mb-2 text-gray-300"></i>
+                        <h4 class="font-bold">别墅</h4>
+                        <p class="text-green-500">5000</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 穿搭选择 -->
+            <div class="mb-6">
+                <h3 class="text-xl font-bold mb-3 glow-text">穿搭风格</h3>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    <div class="option-card p-3 rounded-lg cursor-pointer" data-value="200" data-type="clothing">
+                        <i class="fas fa-tshirt text-3xl mb-2 text-gray-300"></i>
+                        <h4 class="font-bold">休闲</h4>
+                        <p class="text-green-500">200</p>
+                    </div>
+                    <div class="option-card p-3 rounded-lg cursor-pointer" data-value="800" data-type="clothing">
+                        <i class="fas fa-suitcase text-3xl mb-2 text-gray-300"></i>
+                        <h4 class="font-bold">商务</h4>
+                        <p class="text-green-500">800</p>
+                    </div>
+                    <div class="option-card p-3 rounded-lg cursor-pointer" data-value="2000" data-type="clothing">
+                        <i class="fas fa-gem text-3xl mb-2 text-gray-300"></i>
+                        <h4 class="font-bold">高端</h4>
+                        <p class="text-green-500">2000</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 资金计算 -->
+            <div class="bg-gray-900 p-3 rounded-lg mb-6">
+                <div class="flex justify-between items-center">
+                    <p class="text-lg">总资金消耗:</p>
+                    <p id="total-cost" class="text-2xl font-bold text-green-500">0</p>
+                </div>
+                <div class="w-full bg-gray-700 h-2 rounded-full mt-2">
+                    <div id="cost-bar" class="bg-green-500 h-2 rounded-full" style="width: 0%"></div>
+                </div>
+                <p class="text-xs text-gray-400 mt-1">预算范围: 100 - 10000</p>
+            </div>
+            
+            <div class="flex justify-center gap-4">
+                <button id="items-prev" class="px-6 py-3 bg-black border border-green-500 rounded-lg glow-effect hover:bg-gray-900 transition-all">
+                    上一步
+                </button>
+                <button id="items-next" class="px-6 py-3 bg-black border border-green-500 rounded-lg glow-effect hover:bg-gray-900 transition-all">
+                    下一步
+                </button>
+            </div>
+        </div>
+        
+        <!-- Agent运行监控页 -->
+        <div id="monitor-page" class="w-full max-w-5xl hidden">
+            <h2 class="text-3xl font-bold mb-8 text-center glow-text">数字分身监控</h2>
+            
+            <div class="flex flex-col md:flex-row gap-8 mb-8">
+                <!-- 左侧动态展示区 -->
+                <div class="w-full md:w-1/2">
+                    <div class="bg-gray-900 p-6 rounded-lg h-64 flex items-center justify-center">
+                        <div class="text-center">
+                            <h3 class="text-xl font-bold mb-4 glow-text">你的未来色彩</h3>
+                            <div id="future-color-display" class="w-32 h-32 mx-auto rounded-full border-2 border-green-500 mb-4" style="background-color: rgb(128, 128, 128);"></div>
+                            <p id="rgb-values-display" class="text-gray-300">RGB(128, 128, 128)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 右侧数值曲线图 -->
+                <div class="w-full md:w-1/2">
+                    <div class="bg-gray-900 p-6 rounded-lg h-64 flex items-center justify-center">
+                        <div class="text-center">
+                            <i class="fas fa-user text-green-500 text-4xl mb-4"></i>
+                            <h3 class="text-xl font-bold mb-2 glow-text">你的编号</h3>
+                            <p id="player-number-display" class="text-3xl font-bold text-green-500">-</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                <!-- 排队提醒 -->
+                <div class="bg-gray-900 p-6 rounded-lg">
+                    <h3 class="text-xl font-bold mb-4 glow-text">等待队列</h3>
+                    <p class="text-gray-300 mb-4">
+                        <i class="fas fa-clock text-green-500 mr-2"></i>
+                        当前排队人数: <span id="queue-count-display" class="text-green-500">加载中...</span>
+                    </p>
+                    <p class="text-gray-300">
+                        <i class="fas fa-info-circle text-green-500 mr-2"></i>
+                        预计等待时间: <span id="wait-time-display" class="text-green-500">计算中...</span>
+                    </p>
+                </div>
+
+                <!-- 移动端入口 -->
+                <div class="bg-gray-900 p-6 rounded-lg flex flex-col items-center justify-center">
+                    <h3 class="text-xl font-bold mb-4 glow-text">移动端入口</h3>
+                    <img src="future.jpg" alt="Future Image" class="mb-4 border-2 border-green-500 rounded-lg" style="width: 150px; height: 150px; object-fit: cover;">
+                    <p class="text-gray-300 text-sm">扫描二维码继续体验</p>
+                </div>
+            </div>
+
+            <div class="flex justify-center">
+                <button id="monitor-home" class="px-6 py-3 bg-black border border-green-500 rounded-lg glow-effect hover:bg-gray-900 transition-all">
+                    返回首页
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 页面导航逻辑
+        document.addEventListener('DOMContentLoaded', function() {
+            const pages = ['welcome', 'name-input', 'mbti', 'health', 'items', 'monitor'];
+            let currentPage = 0;
+            let playerName = ''; // 存储玩家名称
+
+            // 显示指定页面
+            function showPage(index) {
+                pages.forEach((page, i) => {
+                    const element = document.getElementById(`${page}-page`);
+                    if (i === index) {
+                        element.classList.remove('hidden');
+                    } else {
+                        element.classList.add('hidden');
+                    }
+                });
+                currentPage = index;
+
+                // 当切换到监控页时，更新数字分身颜色和玩家名称
+                if (index === 5) {
+                    updateDigitalCloneColor();
+                    updatePlayerNameDisplay();
+                    updateQueueStatus(); // 更新队列状态
+                }
+            }
+
+            // 更新玩家名称显示
+            function updatePlayerNameDisplay() {
+                const displayElement = document.getElementById('player-name-display');
+                if (displayElement && playerName) {
+                    displayElement.textContent = playerName;
+                }
+            }
+
+            // 开始按钮 - 从欢迎页到用户名输入页
+            document.getElementById('start-btn').addEventListener('click', function() {
+                showPage(1);
+            });
+
+            // 用户名输入页 - 返回按钮
+            document.getElementById('name-back-btn').addEventListener('click', function() {
+                showPage(0);
+            });
+
+            // 用户名输入页 - 继续按钮
+            document.getElementById('name-next-btn').addEventListener('click', function() {
+                const nameInput = document.getElementById('player-name');
+                const name = nameInput.value.trim();
+                
+                // 简单验证，不允许空名称
+                if (name) {
+                    playerName = name;
+                    showPage(2); // 进入MBTI页面
+                } else {
+                    // 提示用户输入名称
+                    nameInput.classList.add('border-red-500');
+                    setTimeout(() => {
+                        nameInput.classList.remove('border-red-500');
+                    }, 1000);
+                }
+            });
+
+            // MBTI页面下一步
+            document.getElementById('mbti-next').addEventListener('click', function() {
+                showPage(3);
+            });
+
+            // 健康页面上一步
+            document.getElementById('health-prev').addEventListener('click', function() {
+                showPage(2);
+            });
+
+            // 健康页面下一步
+            document.getElementById('health-next').addEventListener('click', function() {
+                showPage(4);
+            });
+
+            // 道具页面上一步
+            document.getElementById('items-prev').addEventListener('click', function() {
+                showPage(3);
+            });
+
+            // 道具页面下一步
+            document.getElementById('items-next').addEventListener('click', function() {
+                showPage(5);
+                // 生成玩家数据并保存到JSON文件
+                generatePlayerData();
+            });
+
+            // 获取队列状态信息
+            function updateQueueStatus() {
+                fetch('/get_queue_status')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            // 更新排队人数显示
+                            const queueCountDisplay = document.getElementById('queue-count-display');
+                            if (queueCountDisplay) {
+                                queueCountDisplay.textContent = data.queue_count;
+                            }
+                            
+                            // 更新等待时间显示
+                            const waitTimeDisplay = document.getElementById('wait-time-display');
+                            if (waitTimeDisplay) {
+                                waitTimeDisplay.textContent = data.wait_time_text;
+                            }
+                        } else {
+                            console.error('获取队列状态失败:', data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('获取队列状态时出错:', error);
+                    });
+            }
+
+            // 监控页面显示后更新数字分身颜色
+            function updateDigitalCloneColor() {
+                // 获取之前保存的玩家数据
+                fetch('/get_player_data')
+                    .then(response => response.json())
+                    .then(data => {
+                        // 确保有数据并且不是空数组
+                        if (data && data.received_data && data.received_data.players && data.received_data.players.length > 0) {
+                            // 获取最新的玩家数据
+                            const latestPlayer = data.received_data.players[data.received_data.players.length - 1];
+                            if (latestPlayer.R !== undefined && latestPlayer.G !== undefined && latestPlayer.B !== undefined) {
+                                // 更新未来色彩显示
+                                const futureColorDisplay = document.getElementById('future-color-display');
+                                const rgbValuesDisplay = document.getElementById('rgb-values-display');
+                                
+                                if (futureColorDisplay) {
+                                    const rgbColor = `rgb(${latestPlayer.R}, ${latestPlayer.G}, ${latestPlayer.B})`;
+                                    futureColorDisplay.style.backgroundColor = rgbColor;
+                                    futureColorDisplay.style.boxShadow = `0 0 20px rgba(${latestPlayer.R}, ${latestPlayer.G}, ${latestPlayer.B}, 0.8)`;
+                                }
+                                
+                                if (rgbValuesDisplay) {
+                                    rgbValuesDisplay.textContent = `RGB(${latestPlayer.R}, ${latestPlayer.G}, ${latestPlayer.B})`;
+                                }
+                            }
+                            
+                            // 更新玩家编号显示
+                            if (latestPlayer.Number !== undefined) {
+                                const playerNumberDisplay = document.getElementById('player-number-display');
+                                if (playerNumberDisplay) {
+                                    playerNumberDisplay.textContent = latestPlayer.Number;
+                                }
+                            }
+                        }
+                    })
+                    .catch(error => {
+                        console.error('获取玩家数据时出错:', error);
+                    });
+            }
+
+            // 监控页面返回首页
+            document.getElementById('monitor-home').addEventListener('click', function() {
+                showPage(0);
+            });
+
+            // 监听页面切换到监控页
+            const healthTabs = ['health-good', 'health-fair', 'health-poor'];
+            healthTabs.forEach(tabId => {
+                document.getElementById(tabId).addEventListener('click', function() {
+                    healthTabs.forEach(id => {
+                        document.getElementById(id).classList.remove('active');
+                    });
+                    this.classList.add('active');
+                });
+            });
+            
+            // 道具选择逻辑
+            const optionCards = document.querySelectorAll('.option-card');
+            const selectedItems = {
+                transport: null,
+                housing: null,
+                clothing: null
+            };
+            
+            optionCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    const type = this.dataset.type;
+                    const value = parseInt(this.dataset.value);
+                    
+                    // 移除同类型其他选项的选中状态
+                    document.querySelectorAll(`.option-card[data-type="${type}"]`).forEach(el => {
+                        el.classList.remove('selected');
+                    });
+                    
+                    // 设置当前选项为选中状态
+                    this.classList.add('selected');
+                    selectedItems[type] = value;
+                    
+                    // 更新总资金
+                    updateTotalCost();
+                });
+            });
+            
+            // 更新总资金
+            function updateTotalCost() {
+                let total = 0;
+                for (const key in selectedItems) {
+                    if (selectedItems[key] !== null) {
+                        total += selectedItems[key];
+                    }
+                }
+                
+                document.getElementById('total-cost').textContent = total;
+                const percentage = Math.min(100, (total / (10000)) * 100);
+                document.getElementById('cost-bar').style.width = `${percentage}%`;
+            }
+            
+            // MBTI滑块逻辑
+            const sliders = ['ei', 'sn', 'tf', 'jp'];
+            const sliderValues = {
+                ei: 50,
+                sn: 50,
+                tf: 50,
+                jp: 50
+            };
+            
+            sliders.forEach(slider => {
+                const thumb = document.getElementById(`${slider}-slider`);
+                const track = thumb.parentElement;
+                const valueElement = document.getElementById(`${slider}-value`);
+                
+                let isDragging = false;
+                
+                // 初始化滑块位置
+                updateSliderPosition(thumb, track, sliderValues[slider]);
+                
+                // 鼠标按下事件
+                thumb.addEventListener('mousedown', function(e) {
+                    isDragging = true;
+                    document.addEventListener('mousemove', handleMouseMove);
+                    document.addEventListener('mouseup', handleMouseUp);
+                });
+                
+                // 触摸事件
+                thumb.addEventListener('touchstart', function(e) {
+                    isDragging = true;
+                    document.addEventListener('touchmove', handleTouchMove);
+                    document.addEventListener('touchend', handleTouchEnd);
+                });
+                
+                // 鼠标移动处理
+                function handleMouseMove(e) {
+                    if (!isDragging) return;
+                    const rect = track.getBoundingClientRect();
+                    let position = (e.clientX - rect.left) / rect.width;
+                    position = Math.max(0, Math.min(1, position));
+                    sliderValues[slider] = Math.round(position * 100);
+                    updateSliderPosition(thumb, track, sliderValues[slider]);
+                    updateMBTIDisplay();
+                }
+                
+                // 触摸移动处理
+                function handleTouchMove(e) {
+                    if (!isDragging) return;
+                    const touch = e.touches[0];
+                    const rect = track.getBoundingClientRect();
+                    let position = (touch.clientX - rect.left) / rect.width;
+                    position = Math.max(0, Math.min(1, position));
+                    sliderValues[slider] = Math.round(position * 100);
+                    updateSliderPosition(thumb, track, sliderValues[slider]);
+                    updateMBTIDisplay();
+                }
+                
+                // 鼠标释放
+                function handleMouseUp() {
+                    isDragging = false;
+                    document.removeEventListener('mousemove', handleMouseMove);
+                    document.removeEventListener('mouseup', handleMouseUp);
+                }
+                
+                // 触摸结束
+                function handleTouchEnd() {
+                    isDragging = false;
+                    document.removeEventListener('touchmove', handleTouchMove);
+                    document.removeEventListener('touchend', handleTouchEnd);
+                }
+                
+                // 轨道点击事件
+                track.addEventListener('click', function(e) {
+                    const rect = track.getBoundingClientRect();
+                    let position = (e.clientX - rect.left) / rect.width;
+                    position = Math.max(0, Math.min(1, position));
+                    sliderValues[slider] = Math.round(position * 100);
+                    updateSliderPosition(thumb, track, sliderValues[slider]);
+                    updateMBTIDisplay();
+                });
+            });
+            
+            // 更新滑块位置
+            function updateSliderPosition(thumb, track, value) {
+                const percentage = value;
+                thumb.style.left = `${percentage}%`;
+            }
+            
+            // 更新MBTI显示
+            function updateMBTIDisplay() {
+                // 更新数值显示
+                document.getElementById('ei-value').textContent = `${sliderValues.ei}% ${sliderValues.ei > 50 ? 'E' : 'I'}`;
+                document.getElementById('sn-value').textContent = `${sliderValues.sn}% ${sliderValues.sn > 50 ? 'S' : 'N'}`;
+                document.getElementById('tf-value').textContent = `${sliderValues.tf}% ${sliderValues.tf > 50 ? 'T' : 'F'}`;
+                document.getElementById('jp-value').textContent = `${sliderValues.jp}% ${sliderValues.jp > 50 ? 'J' : 'P'}`;
+                
+                // 更新颜色预览
+                const red = Math.round(255 * (sliderValues.ei / 100));
+                const green = Math.round(255 * (sliderValues.jp / 100));
+                const blue = Math.round(255 * (sliderValues.tf / 100));
+                const yellow = Math.round(255 * (sliderValues.sn / 100));
+                
+                // 混合颜色 (简化处理)
+                const mixedColor = `rgba(${red}, ${Math.max(green, yellow)}, ${blue}, 0.7)`;
+                document.getElementById('color-preview').style.backgroundColor = mixedColor;
+                
+                // 更新综合评估
+                updateMBTIResult();
+            }
+            
+            // 更新MBTI结果评估
+            function updateMBTIResult() {
+                let result = "综合评估: ";
+                
+                // 判断性格倾向
+                const eiType = sliderValues.ei > 50 ? "外向" : "内向";
+                const snType = sliderValues.sn > 50 ? "实感" : "直觉";
+                const tfType = sliderValues.tf > 50 ? "思考" : "情感";
+                const jpType = sliderValues.jp > 50 ? "判断" : "感知";
+                
+                // 判断平衡性
+                const isBalanced = 
+                    Math.abs(sliderValues.ei - 50) < 20 && 
+                    Math.abs(sliderValues.sn - 50) < 20 && 
+                    Math.abs(sliderValues.tf - 50) < 20 && 
+                    Math.abs(sliderValues.jp - 50) < 20;
+                
+                if (isBalanced) {
+                    result += "平衡型人格";
+                } else {
+                    result += `${eiType}-${snType}-${tfType}-${jpType} 型人格`;
+                }
+                
+                document.getElementById('mbti-result').textContent = result;
+            }
+            
+            // 生成玩家数据并保存到JSON文件
+            function generatePlayerData() {
+                // 获取性格色彩混合的RGB值
+                const colorDisplay = document.getElementById('color-preview');
+                const computedStyle = window.getComputedStyle(colorDisplay);
+                const backgroundColor = computedStyle.backgroundColor;
+                
+                // 解析RGB值
+                let r = 128, g = 128, b = 128; // 默认灰度值
+                const rgbMatch = backgroundColor.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+                if (rgbMatch) {
+                    r = parseInt(rgbMatch[1]);
+                    g = parseInt(rgbMatch[2]);
+                    b = parseInt(rgbMatch[3]);
+                }
+                
+                // 获取生理状态
+                let bodyState = 100; // 默认健康
+                if (document.getElementById('health-good').classList.contains('active')) {
+                    bodyState = 100;
+                } else if (document.getElementById('health-fair').classList.contains('active')) {
+                    bodyState = 80;
+                } else if (document.getElementById('health-poor').classList.contains('active')) {
+                    bodyState = 60;
+                }
+                
+                // 获取总资金消耗
+                const totalCostElement = document.getElementById('total-cost');
+                let totalCost = 0;
+                if (totalCostElement) {
+                    const costMatch = totalCostElement.textContent.match(/(\d+)/);
+                    if (costMatch) {
+                        totalCost = parseInt(costMatch[1]);
+                    }
+                }
+                const playerMoney = totalCost * 10000;
+                
+                // 构建玩家数据对象，使用用户输入的名称
+                const playerData = {
+                    "R": r,
+                    "G": g,
+                    "B": b,
+                    "Player Name": playerName || "Player", // 使用输入的名称或默认值
+                    "Player Money": playerMoney,
+                    "Player Body State": bodyState,
+                    "number": 0, // 将在保存时更新
+                    "metadata": {
+                        "game_version": "1.0",
+                        "timestamp": new Date().toISOString()
+                    }
+                };
+                
+                // 保存数据到JSON文件
+                saveToJsonFile(playerData);
+            }
+            
+            // 替换原来的 saveToJsonFile 函数
+            function saveToJsonFile(playerData) {
+                // 使用fetch API向后端服务器发送数据
+                fetch('/save_player_data', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(playerData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('服务器响应:', data);
+                    
+                    // 如果服务器返回了玩家编号，更新显示
+                    if (data.player_number !== undefined) {
+                        const playerNumberDisplay = document.getElementById('player-number-display');
+                        if (playerNumberDisplay) {
+                            playerNumberDisplay.textContent = data.player_number;
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('保存数据时出错:', error);
+                    alert('保存数据时出错，请确保后端服务器已启动');
+                });
+            }
+        });
+    </script>
+</body>
+</html>

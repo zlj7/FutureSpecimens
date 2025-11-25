@@ -1,0 +1,47 @@
+{
+    "received_data": {
+        "players": [
+            {
+                "Player Name": "1_@zlj123",
+                "Player Money": 41000000,
+                "Player Age": 18,
+                "Player Body State": 60,
+                "Player Mind State": 100,
+                "PlayerIQ": 120,
+                "Player El": 120,
+                "R": 31,
+                "G": 41,
+                "B": 55,
+                "Additional Info": "游戏生成的玩家数据",
+                "Number": 1,
+                "Timestamp": "2025-09-29T13:34:47.534782"
+            },
+            {
+                "Player Name": "2_@zlj",
+                "Player Money": 73000000,
+                "Player Age": 18,
+                "Player Body State": 80,
+                "Player Mind State": 100,
+                "PlayerIQ": 120,
+                "Player El": 120,
+                "R": 31,
+                "G": 41,
+                "B": 55,
+                "Additional Info": "游戏生成的玩家数据",
+                "Number": 2,
+                "Timestamp": "2025-10-07T01:05:32.229683"
+            }
+        ],
+        "metadata": {
+            "description": "玩家数据存储",
+            "version": "1.0",
+            "total_players": 9,
+            "current_number": 1,
+            "last_updated": "2025-10-07 01:05:32",
+            "color_info": "R、G、B字段表示玩家的颜色属性，取值范围为0-255整数"
+        }
+    },
+    "received_at": "2025-10-08 17:07:54",
+    "source_server": "127.0.0.1",
+    "transfer_type": "full_copy"
+}
