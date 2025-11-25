@@ -202,35 +202,4 @@ Please read our contributing guidelines before submitting pull requests.
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Publications
-
-This repository supports the research paper:
-> **FutureSpecimens: An Agent-Driven Social Simulation Installation**
-> 
-> Published in [Journal/Conference Name]
-
-If you use this code in your research, please cite our paper:
-```
-@article{futurespecimens2025,
-  title={FutureSpecimens: An Agent-Driven Social Simulation Installation},
-  author={Your Name et al.},
-  journal={Journal Name},
-  year={2025}
-}
-```
-
-## Acknowledgments
-
-- Thanks to all researchers and artists who contributed to this interdisciplinary project
-- Special recognition to institutions supporting computational social science research
-- Gratitude to participants who engaged with our interactive installation
-
-## Contact
-
-For research collaborations or technical inquiries, please contact:
-- [Your Email]
-- [Institution/Organization]
-
----
-
 *This system represents an experimental approach to combining computational modeling with interactive art to explore social dynamics and speculative futures.*
