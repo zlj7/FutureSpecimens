@@ -75,8 +75,8 @@ graph TB
 ### Prerequisites
 
 - Python 3.8 or higher
-- Windows, Linux, or macOS
-- Unity Engine (for running the full simulation)
+- Windows
+- Unreal Engine (for running the full simulation, or you could just run our released exe file)
 - WeChat account (for interactive features)
 
 ### Setup
